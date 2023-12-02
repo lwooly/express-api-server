@@ -35,14 +35,12 @@ exports.updateTodo = async function(req, res) {
     const queryId = req.params.id;
 
     try {
-        const todo = await Todo.findById(queryId)
-        console.log(`found document`, todo instanceof mongoose.Document)
+        const updatedTodo = await Todo.findOneAndUpdate({_id:req.params.id}, req.body, {
+            new: true,
+            runValidators: true
+        })
 
-        console.log(todoData)
-        todo.name = todoData.name
-        todo.description = todoData.description
-        await todo.save()
-        return res.status(202).json(todo);
+        return res.status(202).json(updatedTodo);
     }catch (err) {
         res.status(500).send(err)
     };
@@ -50,10 +48,9 @@ exports.updateTodo = async function(req, res) {
 
 
 exports.deleteTodo = async function(req, res) {
-    const queryId = req.params.id;
+
     try {
-        const todo = await Todo.findById(queryId)
-        await Todo.deleteOne(todo)
+        const todo = await Todo.findByIdAndDelete(req.params.id)
         return res.status(200).json(todo)
 
     } catch (err) {
